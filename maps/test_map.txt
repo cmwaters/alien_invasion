@@ -1,0 +1,4 @@
+Auckland north=Whangarei south=Hamilton east=Coromandel
+Hamilton north=Auckland east=Rotorua south=Taupo
+Rotorua north=Coromandel east=Tauranga south=Napier
+Taupo west=New Plymouth east=Napier south=Wellington
