@@ -3,51 +3,29 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"math/rand"
 	"os"
+	"strconv"
+	"strings"
 )
 
 var cities map[string]City
+var aliens map[int]City
 
 func main() {
-	fmt.Printf("Welcome to Alien Invader\n")
-	//reader := bufio.NewReader(os.Stdin)
-	//_, err := ioutil.ReadDir("maps/")
-	//if err != nil {
-	//	// If there are no maps in the directory then request to generate one
-	//	fmt.Print("You have no maps in the maps directory. Would you like to generate one (Y/N): ")
-	//	// TODO: Make sure a map is available to be read and allow for one to automatically be generated
-	//} else {
-	//	// Else ask the user to select a map for the simulation
-	//	fmt.Print("Please enter the name of the map you wish to simulate (i.e test_map): ")
-	//	// TODO: Add handling of errors in user input here
-	//}
-	//mapName, _ := reader.ReadString('\n')
-	//mapName = strings.TrimSuffix(mapName, "\n")
-
 	cities = make(map[string]City)
+	aliens = make(map[int]City)
+	fmt.Printf("Welcome to Alien Invader\n")
+	processFile(getFileName())
+	injectAliens()
 
-	processFile("maps/test_map.txt")
-	//processFile("maps/" + mapName + ".txt")
+	fmt.Print(len(aliens))
 
-	christchurch := City{
-		Name: "Christchurch",
-	}
-
-	dunedin := City{
-		Name: "Dunedin",
-	}
-
-	dunedin.North = &christchurch
-
-	fmt.Print("Hello")
-	fmt.Printf("Name: %s \n", dunedin.North.Name)
-
-	dunedin.print()
-
-	for _, city := range cities {
-		city.print()
-	}
+	//for _, city := range cities {
+	//	city.print()
+	//}
 
 }
 
@@ -154,4 +132,63 @@ func nextWordIsADirection(sentence string, index int) bool {
 		}
 	}
 	return false
+}
+
+func getFileName() string {
+	reader := bufio.NewReader(os.Stdin)
+	files, err := ioutil.ReadDir("maps/")
+	if err != nil {
+		// If there are no maps in the directory then request to generate one
+		fmt.Print("You have no maps in the maps directory. Would you like to generate one (Y/N): ")
+		// TODO: Make sure a map is available to be read and allow for one to automatically be generated
+		return ""
+	} else if len(files) > 1 {
+		for _, file := range files {
+			fmt.Println(file.Name())
+		}
+		for i := 0; i < 1000; i++ {
+			fmt.Print("Please enter the name of the map you wish to simulate (i.e test_map): ")
+			// TODO: Add handling of errors in user input here
+			mapName, _ := reader.ReadString('\n')
+			mapName = strings.TrimSuffix(mapName, "\n")
+			for _, file := range files {
+				if mapName+".txt" == file.Name() {
+					fmt.Printf("Running simulation with map: %s \n", mapName+".txt")
+					return "maps/" + mapName + ".txt"
+				}
+			}
+		}
+		fmt.Print("Closing Application")
+		return ""
+	} else {
+		fmt.Printf("Running simulation with map: %s \n", files[0].Name())
+		return "maps/" + files[0].Name()
+	}
+
+}
+
+func injectAliens() {
+	reader := bufio.NewReader(os.Stdin)
+	var cityIndex map[int]City
+	cityIndex = make(map[int]City)
+	index := 0
+	for _, city := range cities {
+		cityIndex[index] = city
+		index++
+	}
+	distributedAliens := false
+	for !distributedAliens {
+		fmt.Print("Enter the amount of Aliens to enter the simulation: ")
+		amountOfAliensString, _ := reader.ReadString('\n')
+		amountOfAliensString = strings.TrimSuffix(amountOfAliensString, "\n")
+		amountOfAliens, err := strconv.Atoi(amountOfAliensString)
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			for index := 0; index < amountOfAliens; index++ {
+				aliens[index] = cityIndex[rand.Intn(len(cities))]
+			}
+			distributedAliens = true
+		}
+	}
 }
