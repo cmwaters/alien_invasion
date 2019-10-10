@@ -17,16 +17,53 @@ var aliens map[int]City
 func main() {
 	cities = make(map[string]City)
 	aliens = make(map[int]City)
+	initializeLog()
+	writeLog("SIMULATION START")
 	fmt.Printf("Welcome to Alien Invader\n")
 	processFile(getFileName())
 	injectAliens()
-
+	for _, city := range cities {
+		city.print()
+	}
+	simIterations := 0
+	aliensDestroyed := false
+	for simIterations < 10000 && !aliensDestroyed {
+		// step through the simulation by moving the aliens and evaluating the conflicts
+		step()
+		simIterations++
+		// check if all aliens have been destroyed
+		if len(aliens) == 0 {
+			aliensDestroyed = true
+		}
+		writeLog("Iteration " + strconv.Itoa(simIterations)) // + " Summary: Cities: " + len(cities) + ", Aliens: " + len(aliens))
+	}
 	fmt.Print(len(aliens))
+	fmt.Print(simIterations)
 
-	//for _, city := range cities {
-	//	city.print()
-	//}
+}
 
+func step() {
+	// Alien moves in one of the four directions towards a new city
+	for alien, city := range aliens {
+		priorCity := aliens[alien]
+		priorCity.removeAlien(alien)
+		newCity := city.chooseRandomNeighborCity()
+		aliens[alien] = newCity
+	}
+	// Evaluate any conflicts that may occur in a city
+	for _, city := range cities {
+		if len(city.Aliens) >= 2 {
+			fmt.Printf("%s has been destroyed by alien ", city.Name)
+			for index, alienId := range city.Aliens {
+				fmt.Printf("%s", alienId)
+				delete(aliens, alienId)
+				if index < len(city.Aliens)-1 {
+					fmt.Printf(" and alien ")
+				}
+			}
+			delete(cities, city.Name)
+		}
+	}
 }
 
 func processFile(fileName string) bool {
@@ -146,9 +183,8 @@ func getFileName() string {
 		for _, file := range files {
 			fmt.Println(file.Name())
 		}
-		for i := 0; i < 1000; i++ {
+		for i := 0; i < 10; i++ {
 			fmt.Print("Please enter the name of the map you wish to simulate (i.e test_map): ")
-			// TODO: Add handling of errors in user input here
 			mapName, _ := reader.ReadString('\n')
 			mapName = strings.TrimSuffix(mapName, "\n")
 			for _, file := range files {
@@ -186,9 +222,41 @@ func injectAliens() {
 			log.Fatal(err)
 		} else {
 			for index := 0; index < amountOfAliens; index++ {
-				aliens[index] = cityIndex[rand.Intn(len(cities))]
+				city := cityIndex[rand.Intn(len(cities))]
+				aliens[index] = city
+				writeLog("New Alien")
+				writeLog(strconv.Itoa(index))
+				writeLog(city.Name)
+				writeLog("Total Aliens at City: " + strconv.Itoa(len(city.Aliens)))
+				//TODO: Failing to add an alien to a city
+				fmt.Print("Before: " + strconv.Itoa(len(city.Aliens)))
+				city.Aliens = append(city.Aliens, index)
+				fmt.Print("After: " + strconv.Itoa(len(city.Aliens)))
 			}
 			distributedAliens = true
 		}
+	}
+}
+
+func initializeLog() {
+	_, err := os.Create("log.txt")
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func writeLog(message string) {
+	f, err := os.OpenFile("log.txt", os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Println(err)
+	}
+	_, err = fmt.Fprintln(f, message)
+	if err != nil {
+		fmt.Println(err)
+		f.Close()
+	}
+	err = f.Close()
+	if err != nil {
+		fmt.Println(err)
 	}
 }
