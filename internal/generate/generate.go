@@ -1,16 +1,16 @@
-// Generates a random map of cities and their neighboring cities, outputted in a .txt auxiliary_functions
-
+// Generates a random map of cities and their neighboring cities, outputted in a .txt general
 package generate
 
 import (
-	"bytes"
 	"fmt"
-	"github.com/Pallinder/go-randomdata"
 	c "github.com/cmwaters/alien_invasion/internal/city"
+	. "github.com/cmwaters/alien_invasion/internal/general"
 	"github.com/cmwaters/alien_invasion/internal/log"
 	"math/rand"
 	"os"
 )
+
+var usedCityNames []string
 
 // Creates a grid of cities that is sizeX wide by sizeY high
 func MakeCityGrid(sizeX int, sizeY int) map[int]*c.City {
@@ -24,7 +24,7 @@ func MakeCityGrid(sizeX int, sizeY int) map[int]*c.City {
 	for y := 0; y < sizeY; y++ {
 		for x := 0; x < sizeX; x++ {
 			if cities[x+sizeX*y] == nil { // should only run for creating the first city (at the top left corner of the grid)
-				cities[x+sizeX*y] = &c.City{Name: cityNames[rand.Intn(len(cityNames))]}
+				cities[x+sizeX*y] = &c.City{Name: randomUniqueCity()}
 			}
 			if y > 0 { // if not the first row then link this city with the city directly above it
 				cities[x+sizeX*y].North = cities[x+sizeX*(y-1)]
@@ -32,12 +32,14 @@ func MakeCityGrid(sizeX int, sizeY int) map[int]*c.City {
 			if x > 0 { // if not the first column then link this city with the city to the left of it which should already be created
 				cities[x+sizeX*y].West = cities[(x-1)+sizeX*y]
 			}
-			if x < sizeX { // if not the last city  in the row then create another city to the left and link this city to it
-				cities[(x+1)+sizeX*y] = &c.City{Name: cityNames[rand.Intn(len(cityNames))]}
+			if x < sizeX-1 { // if not the last city  in the row then create another city to the left and link this city to it
+				if y == 0 {
+					cities[(x+1)+sizeX*y] = &c.City{Name: randomUniqueCity()}
+				}
 				cities[x+sizeX*y].East = cities[(x+1)+sizeX*y]
 			}
-			if y < sizeY { // if not the last row in the grid then create another city below and link this city to it
-				cities[x+sizeX*(y+1)] = &c.City{Name: cityNames[rand.Intn(len(cityNames))]}
+			if y < sizeY-1 { // if not the last row in the grid then create another city below and link this city to it
+				cities[x+sizeX*(y+1)] = &c.City{Name: randomUniqueCity()}
 				cities[x+sizeX*y].South = cities[x+sizeX*(y+1)]
 			}
 		}
@@ -46,40 +48,31 @@ func MakeCityGrid(sizeX int, sizeY int) map[int]*c.City {
 }
 
 func MakeOutputFile(world map[int]*c.City, fileName string) {
-	file, err := os.Open(fileName)
+	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Write("error", "Failed to read the file")
+		log.Write("error", "Failed to write to the file: "+fileName)
 	} else {
 		for _, city := range world {
-			message := bytes.Buffer{}
-			message.WriteString(city.Name + " - ")
-			if city.North != nil {
-				message.WriteString("North: " + city.North.Name)
-			}
-			if city.East != nil {
-				message.WriteString("East: " + city.East.Name)
-			}
-			if city.West != nil {
-				message.WriteString("West: " + city.West.Name)
-			}
-			if city.South != nil {
-				message.WriteString("North: " + city.South.Name)
-			}
-			message.WriteString("\n")
-			_, err := file.WriteString(message.String())
+			_, err := file.WriteString(city.String())
 			Check(err)
 		}
 	}
+	err = file.Close()
+	Check(err)
+	fmt.Println("Successfully created a new map under the path: " + fileName)
 }
 
-func Check(e error) {
-	if e != nil {
-		panic(e)
+func randomUniqueCity() string {
+	uniqueCityFound := false
+	var cityName string
+	for !uniqueCityFound {
+		cityName = cityNames[rand.Intn(len(cityNames))]
+		if !Contains(usedCityNames, cityName) {
+			uniqueCityFound = true
+		}
 	}
-}
-
-func PrintRandomCity() {
-	fmt.Println(randomdata.City())
+	usedCityNames = append(usedCityNames, cityName)
+	return cityName
 }
 
 // source from https://simplemaps.com/data/de-cities

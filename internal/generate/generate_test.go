@@ -9,7 +9,7 @@ import (
 func TestMakeCityGrid(t *testing.T) {
 	var cities map[int]*c.City
 	cities = make(map[int]*c.City)
-	cities = MakeCityGrid(10, 10)
+	cities = MakeCityGrid(2, 2)
 	if len(cities) != 10 {
 		message := bytes.Buffer{}
 		for _, city := range cities {

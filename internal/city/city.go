@@ -3,10 +3,8 @@ package city
 
 import (
 	"bytes"
-	"fmt"
 	a "github.com/cmwaters/alien_invasion/internal/alien"
 	"math/rand"
-	"strconv"
 )
 
 type City struct {
@@ -54,30 +52,29 @@ func (city City) AlienPresentInCity(alien a.Alien) bool {
 	return false
 }
 
-func (city City) Print() {
-	fmt.Printf("Name: %s, ", city.Name)
+func (city City) String() string {
+	message := bytes.Buffer{}
+	message.WriteString(city.Name)
 	if city.North != nil {
-		fmt.Printf("North: %s, ", city.North.Name)
+		message.WriteString(" north=" + city.North.Name)
 	}
 	if city.East != nil {
-		fmt.Printf("East: %s, ", city.East.Name)
+		message.WriteString(" east=" + city.East.Name)
 	}
 	if city.West != nil {
-		fmt.Printf("West: %s, ", city.West.Name)
+		message.WriteString(" west=" + city.West.Name)
 	}
 	if city.South != nil {
-		fmt.Printf("South: %s, ", city.South.Name)
+		message.WriteString(" south=" + city.South.Name)
 	}
-	for _, alien := range city.Aliens {
-		fmt.Printf("Alien %d ", alien)
-	}
-	fmt.Printf("\n")
+	message.WriteString("\n")
+	return message.String()
 }
 
 func (city City) AliensToString() string {
 	message := bytes.Buffer{}
-	for id, _ := range city.Aliens {
-		message.WriteString("Alien " + strconv.Itoa(id) + ", ")
+	for _, alien := range city.Aliens {
+		message.WriteString("Aliens: " + alien.Name() + " ")
 	}
 	return message.String()
 }

@@ -5,10 +5,11 @@ import (
 	"bytes"
 	"fmt"
 	a "github.com/cmwaters/alien_invasion/internal/alien"
-	f "github.com/cmwaters/alien_invasion/internal/auxiliary_functions"
 	c "github.com/cmwaters/alien_invasion/internal/city"
+	g "github.com/cmwaters/alien_invasion/internal/general"
 	"github.com/cmwaters/alien_invasion/internal/generate"
 	"github.com/cmwaters/alien_invasion/internal/log"
+	"io/ioutil"
 	"math/rand"
 	"os"
 	"strconv"
@@ -17,6 +18,7 @@ import (
 
 var cities map[string]*c.City
 var aliens map[int]*a.Alien
+var WorldSize = 10
 
 func main() {
 	cities = make(map[string]*c.City)
@@ -24,24 +26,21 @@ func main() {
 	log.Initialize("debug")
 	log.Initialize("error")
 	fmt.Printf("Welcome to Alien Invader\n")
-	for i := 0; i < 100; i++ {
-		generate.PrintRandomCity()
-	}
-	processFile(f.GetFileName())
+	processFile(GetFileName())
 	injectAliens()
 	simIterations := 0
 	aliensDestroyed := false
 	log.Write("debug", "Initial Simulation Configuration: "+"\n"+simulationStatus())
-	for simIterations < 2 && !aliensDestroyed {
+	for simIterations < 10000 && !aliensDestroyed {
 		simIterations++
-		log.Write("debug", "step: "+strconv.Itoa(simIterations)+"\n")
 		// step through the simulation by moving the aliens and evaluating the conflicts
 		step()
 		// check if all aliens have been destroyed
 		if len(aliens) == 0 {
 			aliensDestroyed = true
 		}
-		if simIterations%1 == 0 { //log summary of status to the debug log
+		if simIterations%100 == 0 { //log summary of status to the debug log
+			log.Write("debug", "step: "+strconv.Itoa(simIterations)+"\n")
 			log.Write("debug", simulationStatus())
 		}
 	}
@@ -51,7 +50,6 @@ func step() {
 	// Alien moves in one of the four directions towards a new city
 	for _, alien := range aliens {
 		moveAlien(*alien)
-		log.Write("debug", simulationStatus())
 	}
 	// Evaluate any conflicts that may occur in a city
 	for _, city := range cities {
@@ -109,7 +107,7 @@ func addCity(x string) {
 	for index < len(x) {
 		// check to see that there is a space followed by a direction which is used as the trigger to separate each
 		// piece of information in a single line
-		if f.NextWordIsADirection(x, index) || index == len(x)-1 { //x[index] == ' ' {
+		if g.NextWordIsADirection(x, index) || index == len(x)-1 { //x[index] == ' ' {
 			// check to see if it is the first word in the line which will be treated as the name of the city
 			if cityFound == "" {
 				cityFound = x[0:index]
@@ -251,4 +249,58 @@ func simulationStatus() string {
 		message.WriteString(alien.Name() + ": " + alien.City + "\n")
 	}
 	return message.String()
+}
+
+func GetFileName() string {
+	reader := bufio.NewReader(os.Stdin)
+	files, err := ioutil.ReadDir("maps/")
+	g.Check(err)
+	if len(files) >= 1 {
+		for _, file := range files {
+			fmt.Println(file.Name())
+		}
+		for i := 0; i < 10; i++ {
+			fmt.Print("Please enter the name of the map you wish to simulate (i.e test_map) or press G to generate one: ")
+			mapName, _ := reader.ReadString('\n')
+			mapName = strings.TrimSuffix(mapName, "\n")
+			if mapName == "G" || mapName == "g" {
+				generateMap()
+				return GetFileName()
+			}
+			for _, file := range files {
+				if mapName+".txt" == file.Name() {
+					fmt.Printf("Running simulation with map: %s \n", mapName+".txt")
+					return "maps/" + mapName + ".txt"
+				}
+			}
+		}
+		fmt.Print("Closing Application")
+		return ""
+	} else {
+		// If there are no maps in the directory then request to generate one
+		fmt.Print("You have no maps in the maps directory. Would you like to generate one (Y/N): ")
+		output, _ := reader.ReadString('\n')
+		output = strings.TrimSuffix(output, "\n")
+		if output == "Y" || output == "y" || output == "yes" || output == "Yes" {
+			generateMap()
+			return GetFileName()
+		} else {
+			return ""
+		}
+	}
+}
+
+func generateMap() {
+	fileNameFound := false
+	var fileName string
+	i := 1
+	for !fileNameFound {
+		fileName = "maps/generated_map_" + strconv.Itoa(i) + ".txt"
+		if _, err := os.Stat(fileName); os.IsNotExist(err) {
+			fileNameFound = true
+			break
+		}
+		i++
+	}
+	generate.MakeOutputFile(generate.MakeCityGrid(WorldSize, WorldSize), fileName)
 }
