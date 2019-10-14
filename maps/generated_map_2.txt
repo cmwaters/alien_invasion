@@ -1,0 +1,9 @@
+Pirmasens north=Bielefeld west=Munich south=Nuremberg
+Mainz north=Munich east=Nuremberg west=Rostock
+Nuremberg north=Pirmasens west=Mainz
+Essen east=Osnabrück south=Jena
+Osnabrück east=Bielefeld west=Essen south=Munich
+Bielefeld west=Osnabrück south=Pirmasens
+Jena north=Essen east=Munich south=Rostock
+Munich north=Osnabrück east=Pirmasens west=Jena south=Mainz
+Rostock north=Jena east=Mainz

@@ -18,7 +18,7 @@ import (
 
 var cities map[string]*c.City
 var aliens map[int]*a.Alien
-var WorldSize = 10
+var WorldSize = 3
 
 func main() {
 	cities = make(map[string]*c.City)
@@ -66,8 +66,21 @@ func step() {
 				log.Write("debug", alien.Name()+" has been destroyed")
 				delete(aliens, index)
 			}
-			delete(cities, city.Name)
 			fmt.Printf("\n")
+			// delete the city and remove all relation of other cities to this city
+			if cities[city.Name].North != nil {
+				cities[city.Name].North.South = nil
+			}
+			if cities[city.Name].South != nil {
+				cities[city.Name].South.North = nil
+			}
+			if cities[city.Name].East != nil {
+				cities[city.Name].East.West = nil
+			}
+			if cities[city.Name].West != nil {
+				cities[city.Name].West.East = nil
+			}
+			delete(cities, city.Name)
 		}
 	}
 }
