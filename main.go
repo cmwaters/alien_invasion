@@ -7,6 +7,7 @@ import (
 	a "github.com/cmwaters/alien_invasion/internal/alien"
 	f "github.com/cmwaters/alien_invasion/internal/auxiliary_functions"
 	c "github.com/cmwaters/alien_invasion/internal/city"
+	"github.com/cmwaters/alien_invasion/internal/generate"
 	"github.com/cmwaters/alien_invasion/internal/log"
 	"math/rand"
 	"os"
@@ -23,6 +24,9 @@ func main() {
 	log.Initialize("debug")
 	log.Initialize("error")
 	fmt.Printf("Welcome to Alien Invader\n")
+	for i := 0; i < 100; i++ {
+		generate.PrintRandomCity()
+	}
 	processFile(f.GetFileName())
 	injectAliens()
 	simIterations := 0
