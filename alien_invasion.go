@@ -4,11 +4,11 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	a "github.com/cmwaters/alien_invasion/internal/alien"
-	c "github.com/cmwaters/alien_invasion/internal/city"
-	g "github.com/cmwaters/alien_invasion/internal/general"
-	"github.com/cmwaters/alien_invasion/internal/generate"
-	"github.com/cmwaters/alien_invasion/internal/log"
+	a "github.com/cmwaters/alien_invasion/alien"
+	c "github.com/cmwaters/alien_invasion/city"
+	g "github.com/cmwaters/alien_invasion/general"
+	"github.com/cmwaters/alien_invasion/generate"
+	"github.com/cmwaters/alien_invasion/log"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -26,8 +26,11 @@ func main() {
 	log.Initialize("debug")
 	log.Initialize("error")
 	fmt.Printf("Welcome to Alien Invader\n")
-	processFile(GetFileName())
-	injectAliens()
+	if processFile(GetFileName()) {
+		injectAliens()
+	} else {
+		log.Write("error", "Failed to process input file")
+	}
 	simIterations := 0
 	aliensDestroyed := false
 	log.Write("debug", "Initial Simulation Configuration: "+"\n"+simulationStatus())
@@ -48,6 +51,9 @@ func main() {
 	generate.MakeOutputFile(cities, "output/output.txt")
 }
 
+// Steps through one iteration of the simulation. This consists of moving each Aliens to a randomly selected
+// neighbor city to the one it currently resides in and then at the close checking if any of the cities contain
+// two or more aliens in which both the city and the aliens inhibiting it are destroyed and removed from the map
 func step() {
 	// Alien moves in one of the four directions towards a new city
 	for _, alien := range aliens {
@@ -87,6 +93,9 @@ func step() {
 	}
 }
 
+// Takes a txt file (as a string) and iterates over each line in search for cities to add to the cities map
+// Arguments: fileName string -> the path to the file to be read
+// Returns: bool -> whether it was able to succesfully read the file
 func processFile(fileName string) bool {
 	// open the file and check there are no errors
 	file, err := os.Open(fileName)
@@ -108,12 +117,11 @@ func processFile(fileName string) bool {
 	}
 	// once complete, close the file
 	err = file.Close()
-	if err != nil {
-		log.Write("error", "Failed to close file after reading it")
-	}
+	g.Check(err)
 	return true
 }
 
+// The addCity function takes
 func addCity(x string) {
 	directions := [4]string{"north", "east", "south", "west"}
 	index := 1

@@ -1,9 +1,9 @@
-// Used to create cities in which aliens can move around and potentially destroy
+// Package to create the city struct and respective functions
 package city
 
 import (
 	"bytes"
-	a "github.com/cmwaters/alien_invasion/internal/alien"
+	a "github.com/cmwaters/alien_invasion/alien"
 	"math/rand"
 )
 

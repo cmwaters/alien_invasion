@@ -1,11 +1,11 @@
-// Generates a random map of cities and their neighboring cities, outputted in a .txt general
+// Package to generate a random map of cities and their neighboring cities, outputted in a .txt file
 package generate
 
 import (
 	"fmt"
-	c "github.com/cmwaters/alien_invasion/internal/city"
-	. "github.com/cmwaters/alien_invasion/internal/general"
-	"github.com/cmwaters/alien_invasion/internal/log"
+	c "github.com/cmwaters/alien_invasion/city"
+	. "github.com/cmwaters/alien_invasion/general"
+	log2 "github.com/cmwaters/alien_invasion/log"
 	"math/rand"
 	"os"
 )
@@ -55,7 +55,7 @@ func MakeCityGrid(sizeX int, sizeY int) map[string]*c.City {
 func MakeOutputFile(world map[string]*c.City, fileName string) {
 	f, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Write("error", "Failed to write to the file: "+fileName)
+		log2.Write("error", "Failed to write to the file: "+fileName)
 	} else {
 		for _, city := range world {
 			_, err := f.WriteString(city.String())

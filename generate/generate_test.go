@@ -1,7 +1,7 @@
 package generate
 
 import (
-	c "github.com/cmwaters/alien_invasion/internal/city"
+	c "github.com/cmwaters/alien_invasion/city"
 	"testing"
 )
 

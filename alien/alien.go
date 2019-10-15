@@ -1,3 +1,4 @@
+// Package to create the alien struct
 package alien
 
 import (

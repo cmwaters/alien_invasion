@@ -1,3 +1,4 @@
+// Package with generic auxiliary functions to support the main package. No dependencies.
 package general
 
 func NextWordIsADirection(sentence string, index int) bool {

@@ -1,8 +1,8 @@
 package main
 
 import (
-	a "github.com/cmwaters/alien_invasion/internal/alien"
-	c "github.com/cmwaters/alien_invasion/internal/city"
+	a "github.com/cmwaters/alien_invasion/alien"
+	c "github.com/cmwaters/alien_invasion/city"
 	"testing"
 )
 
