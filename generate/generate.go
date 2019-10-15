@@ -10,9 +10,11 @@ import (
 	"os"
 )
 
+// A record of the names already used for cities in order to main uniqueness
 var usedCityNames []string
 
-// Creates a grid of cities that is sizeX wide by sizeY high
+// Creates a grid of unique cities that is sizeX wide by sizeY high. If the product of these variables is greater than 100
+// then the size is constrained to 10 x 10.
 func MakeCityGrid(sizeX int, sizeY int) map[string]*c.City {
 	if sizeX*sizeY > 100 { // Can't have more than 100 unique cities
 		sizeX = 10
@@ -52,12 +54,13 @@ func MakeCityGrid(sizeX int, sizeY int) map[string]*c.City {
 	return citiesStringForm
 }
 
-func MakeOutputFile(world map[string]*c.City, fileName string) {
+// Generates an output file from the map of cities and stores it under the path filename
+func MakeOutputFile(cities map[string]*c.City, fileName string) {
 	f, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log2.Write("error", "Failed to write to the file: "+fileName)
 	} else {
-		for _, city := range world {
+		for _, city := range cities {
 			_, err := f.WriteString(city.String())
 			Check(err)
 		}
@@ -67,6 +70,7 @@ func MakeOutputFile(world map[string]*c.City, fileName string) {
 	fmt.Println("Successfully created a new file under the path: " + fileName)
 }
 
+// Chooses a random city from the list of cityNames and checks that it is not contained in the usedCityNames variable
 func randomUniqueCity() string {
 	uniqueCityFound := false
 	var cityName string

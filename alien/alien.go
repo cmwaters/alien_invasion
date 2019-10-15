@@ -6,7 +6,7 @@ import (
 )
 
 type Alien struct {
-	Id   int
+	Id   int // must be unique
 	City string
 }
 

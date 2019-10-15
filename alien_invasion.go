@@ -26,6 +26,7 @@ func main() {
 	log.Initialize("debug")
 	log.Initialize("error")
 	fmt.Printf("Welcome to Alien Invader\n")
+	// Retrieve the starting parameters of the simulation in order to build the map of cities and inject the aliens
 	if processFile(GetFileName()) {
 		injectAliens()
 	} else {
@@ -34,6 +35,7 @@ func main() {
 	simIterations := 0
 	aliensDestroyed := false
 	log.Write("debug", "Initial Simulation Configuration: "+"\n"+simulationStatus())
+	// run the simulation for 10000 steps or until the aliens are destroyed
 	for simIterations < 10000 && !aliensDestroyed {
 		simIterations++
 		// step through the simulation by moving the aliens and evaluating the conflicts
@@ -48,7 +50,7 @@ func main() {
 		}
 	}
 	// convert to the correct form for the MakeOutputFile function
-	generate.MakeOutputFile(cities, "output/output.txt")
+	generate.MakeOutputFile(cities, findNewFileName("output/output_"))
 }
 
 // Steps through one iteration of the simulation. This consists of moving each Aliens to a randomly selected
@@ -61,35 +63,7 @@ func step() {
 	}
 	// Evaluate any conflicts that may occur in a city
 	for _, city := range cities {
-		if len(city.Aliens) >= 2 {
-			log.Write("debug", city.Name+" has been destroyed")
-			fmt.Printf("%s has been destroyed by ", city.Name)
-			firstTime := true
-			for index, alien := range city.Aliens {
-				if !firstTime {
-					fmt.Printf(" and ")
-				}
-				firstTime = false
-				fmt.Print(alien.Name())
-				log.Write("debug", alien.Name()+" has been destroyed")
-				delete(aliens, index)
-			}
-			fmt.Printf("\n")
-			// delete the city and remove all relation of other cities to this city
-			if cities[city.Name].North != nil {
-				cities[city.Name].North.South = nil
-			}
-			if cities[city.Name].South != nil {
-				cities[city.Name].South.North = nil
-			}
-			if cities[city.Name].East != nil {
-				cities[city.Name].East.West = nil
-			}
-			if cities[city.Name].West != nil {
-				cities[city.Name].West.East = nil
-			}
-			delete(cities, city.Name)
-		}
+		evaluateCity(city)
 	}
 }
 
@@ -141,16 +115,16 @@ func addCity(x string) {
 					}
 					city := *cities[cityFound]
 					city.Aliens = make(map[int]*a.Alien)
-					city.Aliens[0] = &a.Alien{
-						Id:   0,
-						City: city.Name,
-					}
+					//city.Aliens[0] = &a.Alien{
+					//	Id:   0,
+					//	City: city.Name,
+					//}
 				} else {
 					continue
 				}
 			} else {
 				for _, direction := range directions {
-					// check what direction followed after the previous breakpoint and therefore corresponds to this city
+					// check as to what direction followed after the previous breakpoint and therefore corresponds to this city
 					if x[breakpoint+1:breakpoint+len(direction)+2] == direction+"=" {
 						name := x[breakpoint+len(direction)+2 : index]
 						city := cities[cityFound]
@@ -158,7 +132,7 @@ func addCity(x string) {
 						// if this new city doesn't exist yet then create that city and add it to the dictionary
 						if !ok {
 							cities[name] = &c.City{Name: name}
-							// also add the original city as its counterpart
+							// also add the original city as its neighbor
 							if direction == "north" {
 								cities[name].South = cities[cityFound]
 							} else if direction == "east" {
@@ -190,6 +164,7 @@ func addCity(x string) {
 	}
 }
 
+// This function retrieves the amount of aliens the user wants and adds them to a random city
 func injectAliens() {
 	reader := bufio.NewReader(os.Stdin)
 	// create a city index so as to easily assign a city to an alien based from a randomly generated int
@@ -223,7 +198,6 @@ func injectAliens() {
 				alien := aliens[index]
 				if cities[cityIndex[randNum]].Aliens == nil {
 					cities[cityIndex[randNum]].Aliens = make(map[int]*a.Alien)
-					log.Write("error", "Reinitialized the Alien Map whilst injecting")
 				}
 				cities[cityIndex[randNum]].Aliens[index] = alien
 			}
@@ -232,13 +206,13 @@ func injectAliens() {
 	}
 }
 
-// moves an alien (denoted as an int) from its current city to a neighboring city
+// This function moves an alien (denoted as an int) from its current city to a randomly chosen neighboring city
 func moveAlien(alien a.Alien) {
-	if alien.City == "" {
+	if alien.City == "" { // check alien is in a city
 		log.Write("error", "Alien "+strconv.Itoa(alien.Id)+" has no city assigned to it")
-	} else if cities[alien.City] == nil {
+	} else if cities[alien.City] == nil { // check that the city exists
 		log.Write("error", "The city, "+alien.City+" does not exist")
-	} else if !cities[alien.City].AlienPresentInCity(alien) {
+	} else if !cities[alien.City].AlienPresentInCity(alien) { // check that the alien is in that city
 		log.Write("error", "Alien "+strconv.Itoa(alien.Id)+" is assumed to be present in a city that "+
 			"it isn't in")
 	} else {
@@ -246,12 +220,11 @@ func moveAlien(alien a.Alien) {
 		newCity := oldCity.ChooseRandomNeighborCity()
 		// check that the alien has a new city to move to
 		if !(newCity.Name == oldCity.Name) {
-
 			log.Write("debug", alien.Name()+" has moved from Old City: "+oldCity.Name+" to new City: "+newCity.Name)
 			delete(oldCity.Aliens, alien.Id)
+			// Reinitialize the map of aliens in a city if it hasn't been done yet
 			if newCity.Aliens == nil {
 				newCity.Aliens = make(map[int]*a.Alien)
-				log.Write("error", "Reinitializing the Alien Map")
 			}
 			newCity.Aliens[alien.Id] = &alien
 			aliens[alien.Id].City = newCity.Name
@@ -259,6 +232,7 @@ func moveAlien(alien a.Alien) {
 	}
 }
 
+// This function is used for debugging to output the status of the simulation
 func simulationStatus() string {
 	message := bytes.Buffer{}
 	for _, city := range cities {
@@ -274,6 +248,7 @@ func simulationStatus() string {
 	return message.String()
 }
 
+// Retrieves the file name of the map of cities that the user wants to use for the simulation. If not can also generate a new map
 func GetFileName() string {
 	reader := bufio.NewReader(os.Stdin)
 	files, err := ioutil.ReadDir("maps/")
@@ -287,7 +262,7 @@ func GetFileName() string {
 			mapName, _ := reader.ReadString('\n')
 			mapName = strings.TrimSuffix(mapName, "\n")
 			if mapName == "G" || mapName == "g" {
-				generateMap()
+				generate.MakeOutputFile(generate.MakeCityGrid(WorldSize, WorldSize), findNewFileName("maps/generated_map_"))
 				return GetFileName()
 			}
 			for _, file := range files {
@@ -305,7 +280,7 @@ func GetFileName() string {
 		output, _ := reader.ReadString('\n')
 		output = strings.TrimSuffix(output, "\n")
 		if output == "Y" || output == "y" || output == "yes" || output == "Yes" {
-			generateMap()
+			generate.MakeOutputFile(generate.MakeCityGrid(WorldSize, WorldSize), findNewFileName("maps/generated_map_"))
 			return GetFileName()
 		} else {
 			return ""
@@ -313,17 +288,51 @@ func GetFileName() string {
 	}
 }
 
-func generateMap() {
+// This function keeps appending a counter to the end of a file before returning the name of the file that does exist
+func findNewFileName(fileName string) string {
 	fileNameFound := false
-	var fileName string
+	var newFileName string
 	i := 1
 	for !fileNameFound {
-		fileName = "maps/generated_map_" + strconv.Itoa(i) + ".txt"
+		newFileName = fileName + strconv.Itoa(i) + ".txt"
 		if _, err := os.Stat(fileName); os.IsNotExist(err) {
 			fileNameFound = true
 			break
 		}
 		i++
 	}
-	generate.MakeOutputFile(generate.MakeCityGrid(WorldSize, WorldSize), fileName)
+	return newFileName
+}
+
+func evaluateCity(city *c.City) {
+	if len(city.Aliens) >= 2 {
+		// output the result of the conflict to the console
+		log.Write("debug", city.Name+" has been destroyed")
+		fmt.Printf("%s has been destroyed by ", city.Name)
+		firstTime := true
+		for index, alien := range city.Aliens {
+			if !firstTime {
+				fmt.Printf(" and ")
+			}
+			firstTime = false
+			fmt.Print(alien.Name())
+			log.Write("debug", alien.Name()+" has been destroyed")
+			delete(aliens, index)
+		}
+		fmt.Printf("\n")
+		// delete the city and remove all relation of other cities to this city
+		if cities[city.Name].North != nil {
+			cities[city.Name].North.South = nil
+		}
+		if cities[city.Name].South != nil {
+			cities[city.Name].South.North = nil
+		}
+		if cities[city.Name].East != nil {
+			cities[city.Name].East.West = nil
+		}
+		if cities[city.Name].West != nil {
+			cities[city.Name].West.East = nil
+		}
+		delete(cities, city.Name)
+	}
 }

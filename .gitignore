@@ -1,1 +1,2 @@
-/log
+log/debug_log.txt
+log/error_log.txt
