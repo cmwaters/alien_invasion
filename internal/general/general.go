@@ -1,7 +1,5 @@
 package general
 
-import ()
-
 func NextWordIsADirection(sentence string, index int) bool {
 	directions := [4]string{"north", "east", "south", "west"}
 	for _, direction := range directions {

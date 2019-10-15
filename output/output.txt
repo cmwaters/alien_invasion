@@ -1,0 +1,102 @@
+Bielefeld west=Osnabrück south=Pirmasens
+Essen east=Osnabrück south=Jena
+Osnabrück east=Bielefeld west=Essen
+Jena north=Essen south=Rostock
+Mainz east=Nuremberg west=Rostock
+Nuremberg north=Pirmasens west=Mainz
+Rostock north=Jena east=Mainz
+Pirmasens north=Bielefeld south=Nuremberg
+Meiningen north=Traunstein east=Potsdam
+Weißenburg north=Brake east=Cologne west=Bergheim south=Nienburg
+Frankfurt (Oder) north=Karlsruhe east=Korbach south=Biberach
+Biberach north=Frankfurt (Oder) east=Gießen south=Hamburg
+Duisburg north=Cottbus east=Deggendorf west=Oldenburg south=Mannheim
+Lüchow north=Braunschweig east=Koblenz west=Wuppertal south=Wiesbaden
+Hannover north=Jena east=Brake south=Bergheim
+Göttingen north=Warendorf east=Worms west=Korbach south=Emmendingen
+Worms north=Beeskow east=Kassel west=Göttingen south=Bad Reichenhall
+Hofeck east=Aurich west=Berlin south=Donauwörth
+Fürth north=Schwandorf east=Hanau west=Dingolfing south=Siegen
+Mindelheim north=Mainz west=Nuremberg south=Husum
+Bonn east=Pirna west=Husum south=Tauberbischofsheim
+Heidelberg north=Neustadt east=Kirchheimbolanden west=Kassel south=Görlitz
+Altchemnitz north=Oldenburg east=Mannheim west=Kirchheimbolanden south=Ulm
+Schwandorf north=Mannheim east=Freiburg west=Ulm south=Fürth
+Korbach north=Nienburg east=Göttingen west=Frankfurt (Oder) south=Gießen
+Dortmund north=Wuppertal east=Wiesbaden west=Magdeburg
+Cham north=Koblenz east=Münster west=Wiesbaden
+Mainz east=Berlin west=Pirmasens south=Mindelheim
+Mannheim north=Duisburg east=Ingolstadt west=Altchemnitz south=Schwandorf
+Warendorf north=Cologne east=Beeskow west=Nienburg south=Göttingen
+Vechta north=Marienberg east=Wuppertal west=Meißen south=Magdeburg
+Munich north=Osnabrück east=Rostock west=Jena south=Brake
+Pirna north=Donauwörth east=Coburg west=Bonn south=Rosenheim
+Neustadt north=Tauberbischofsheim east=Düren south=Heidelberg
+Frankfurt east=Saarbrücken west=Aurich south=Marburg
+Koblenz north=Dingolfing east=Siegen west=Lüchow south=Cham
+Nuremberg north=Pirmasens east=Mindelheim west=Rostock south=Künzelsau
+Peine north=Kassel east=Görlitz west=Bad Reichenhall south=Marienberg
+Düsseldorf north=Lübeck west=Münster
+Bremen north=Gießen east=Würzburg west=Hamburg
+Bergheim north=Hannover east=Weißenburg south=Karlsruhe
+Bielefeld east=Pirmasens west=Osnabrück south=Rostock
+Donauwörth north=Hofeck east=Stralsund south=Pirna
+Traunstein north=Hamburg south=Meiningen
+Beeskow north=Regen west=Warendorf south=Worms
+Brake north=Munich east=Ludwigsburg west=Hannover south=Weißenburg
+Cologne north=Ludwigsburg east=Regen west=Weißenburg south=Warendorf
+Erfurt north=Bad Reichenhall east=Marienberg west=Würzburg south=Meißen
+Schwerin north=Meißen east=Magdeburg west=Landsberg
+Husum north=Mindelheim east=Bonn west=Künzelsau
+Marburg north=Frankfurt east=Nordhorn west=Stralsund south=Rotenburg
+Bad Reichenhall north=Worms east=Peine west=Emmendingen south=Erfurt
+Siegen north=Fürth east=Lübeck west=Koblenz south=Münster
+Pirmasens east=Mainz west=Bielefeld south=Nuremberg
+Lübeck north=Hanau west=Siegen south=Düsseldorf
+Emmendingen north=Göttingen east=Bad Reichenhall west=Gießen south=Würzburg
+Cottbus north=Rotenburg east=Dresden west=Aichach south=Duisburg
+Jena north=Essen east=Munich south=Hannover
+Kirchheimbolanden north=Düren east=Altchemnitz west=Heidelberg
+Hamburg north=Biberach east=Bremen south=Traunstein
+Deggendorf north=Dresden west=Duisburg south=Ingolstadt
+Essen east=Osnabrück south=Jena
+Aurich east=Frankfurt west=Hofeck south=Stralsund
+Braunschweig east=Dingolfing south=Lüchow
+Landsberg north=Torgau east=Schwerin west=Potsdam
+Künzelsau north=Nuremberg east=Husum west=Ludwigsburg south=Regen
+Rotenburg north=Marburg east=Trier west=Coburg south=Cottbus
+Wuppertal east=Lüchow west=Vechta south=Dortmund
+Osnabrück east=Bielefeld west=Essen south=Munich
+Ingolstadt north=Deggendorf west=Mannheim south=Freiburg
+Ludwigsburg north=Rostock east=Künzelsau west=Brake south=Cologne
+Aichach north=Coburg east=Cottbus west=Rosenheim south=Oldenburg
+Dingolfing north=Ulm east=Fürth west=Braunschweig south=Koblenz
+Kassel east=Heidelberg west=Worms south=Peine
+Meißen north=Erfurt east=Vechta west=Torgau south=Schwerin
+Trier north=Nordhorn west=Rotenburg south=Dresden
+Wiesbaden north=Lüchow east=Cham west=Dortmund
+Stralsund north=Aurich east=Marburg west=Donauwörth south=Coburg
+Oldenburg north=Aichach east=Duisburg west=Düren south=Altchemnitz
+Saarbrücken west=Frankfurt south=Nordhorn
+Ulm north=Altchemnitz east=Schwandorf south=Dingolfing
+Berlin east=Hofeck west=Mainz
+Tauberbischofsheim north=Bonn east=Rosenheim south=Neustadt
+Magdeburg north=Vechta east=Dortmund west=Schwerin
+Potsdam east=Landsberg west=Meiningen
+Gießen north=Korbach east=Emmendingen west=Biberach south=Bremen
+Torgau north=Würzburg east=Meißen south=Landsberg
+Rostock north=Bielefeld east=Nuremberg west=Munich south=Ludwigsburg
+Rosenheim north=Pirna east=Aichach west=Tauberbischofsheim south=Düren
+Würzburg north=Emmendingen east=Erfurt west=Bremen south=Torgau
+Freiburg north=Ingolstadt west=Schwandorf south=Hanau
+Karlsruhe north=Bergheim east=Nienburg south=Frankfurt (Oder)
+Görlitz north=Heidelberg west=Peine
+Hanau north=Freiburg west=Fürth south=Lübeck
+Dresden north=Trier west=Cottbus south=Deggendorf
+Coburg north=Stralsund east=Rotenburg west=Pirna south=Aichach
+Marienberg north=Peine west=Erfurt south=Vechta
+Düren north=Rosenheim east=Oldenburg west=Neustadt south=Kirchheimbolanden
+Münster north=Siegen east=Düsseldorf west=Cham
+Regen north=Künzelsau west=Cologne south=Beeskow
+Nienburg north=Weißenburg east=Warendorf west=Karlsruhe south=Korbach
+Nordhorn north=Saarbrücken west=Marburg south=Trier

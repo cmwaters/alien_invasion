@@ -13,11 +13,12 @@ import (
 var usedCityNames []string
 
 // Creates a grid of cities that is sizeX wide by sizeY high
-func MakeCityGrid(sizeX int, sizeY int) map[int]*c.City {
+func MakeCityGrid(sizeX int, sizeY int) map[string]*c.City {
 	if sizeX*sizeY > 100 { // Can't have more than 100 unique cities
 		sizeX = 10
 		sizeY = 10
 	}
+	// Use a different map structure to utilise the key as a position of the city in the map rather than the cities name
 	var cities map[int]*c.City
 	cities = make(map[int]*c.City)
 	// loop along both the x and y axes
@@ -44,22 +45,26 @@ func MakeCityGrid(sizeX int, sizeY int) map[int]*c.City {
 			}
 		}
 	}
-	return cities
+	citiesStringForm := make(map[string]*c.City)
+	for _, value := range cities {
+		citiesStringForm[value.Name] = value
+	}
+	return citiesStringForm
 }
 
-func MakeOutputFile(world map[int]*c.City, fileName string) {
-	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+func MakeOutputFile(world map[string]*c.City, fileName string) {
+	f, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Write("error", "Failed to write to the file: "+fileName)
 	} else {
 		for _, city := range world {
-			_, err := file.WriteString(city.String())
+			_, err := f.WriteString(city.String())
 			Check(err)
 		}
 	}
-	err = file.Close()
+	err = f.Close()
 	Check(err)
-	fmt.Println("Successfully created a new map under the path: " + fileName)
+	fmt.Println("Successfully created a new file under the path: " + fileName)
 }
 
 func randomUniqueCity() string {

@@ -44,7 +44,7 @@ func (city City) ChooseRandomNeighborCity() *City {
 }
 
 func (city City) AlienPresentInCity(alien a.Alien) bool {
-	for alienName, _ := range city.Aliens {
+	for alienName := range city.Aliens {
 		if alienName == alien.Id {
 			return true
 		}

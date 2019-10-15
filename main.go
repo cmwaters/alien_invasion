@@ -44,6 +44,8 @@ func main() {
 			log.Write("debug", simulationStatus())
 		}
 	}
+	// convert to the correct form for the MakeOutputFile function
+	generate.MakeOutputFile(cities, "output/output.txt")
 }
 
 func step() {
@@ -253,7 +255,7 @@ func simulationStatus() string {
 	message := bytes.Buffer{}
 	for _, city := range cities {
 		message.WriteString(city.Name + ":")
-		for alien, _ := range city.Aliens {
+		for alien := range city.Aliens {
 			message.WriteString(" Alien " + strconv.Itoa(alien))
 		}
 		message.WriteString("\n")
