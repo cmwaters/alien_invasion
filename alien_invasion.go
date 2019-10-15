@@ -206,7 +206,7 @@ func injectAliens() {
 	}
 }
 
-// This function moves an alien (denoted as an int) from its current city to a randomly chosen neighboring city
+// This function moves an alien from its current city to a randomly chosen neighboring city
 func moveAlien(alien a.Alien) {
 	if alien.City == "" { // check alien is in a city
 		log.Write("error", "Alien "+strconv.Itoa(alien.Id)+" has no city assigned to it")
@@ -304,6 +304,8 @@ func findNewFileName(fileName string) string {
 	return newFileName
 }
 
+// this function checks how many aliens in a city. If greater than or equal 2, the function proceeds to output the results
+// to the console and remove both the aliens and the city from their respective maps.
 func evaluateCity(city *c.City) {
 	if len(city.Aliens) >= 2 {
 		// output the result of the conflict to the console
